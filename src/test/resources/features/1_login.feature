@@ -4,4 +4,6 @@ Feature: Login
     Given the user is on the login page
     When the user enters a valid email and password
     And clicks the login button
+    Then success login notification should be displayed
+    And user clicks mengerti button
     Then the user should be redirected to the dashboard

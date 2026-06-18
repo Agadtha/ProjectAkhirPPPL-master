@@ -11,15 +11,22 @@ import java.time.Duration;
 public class loginPage {
 
     WebDriver driver;
+    WebDriverWait wait;
 
-    By txtEmail = By.xpath("//input[@placeholder='Email']");
-    By txtPassword = By.xpath("//input[@placeholder='Password']");
-    By btnMasuk = By.xpath("//button[contains(.,'Masuk')]");
+    By txtEmail     = By.xpath("//input[@placeholder='Email']");
+    By txtPassword  = By.xpath("//input[@placeholder='Password']");
+
+    // ✅ Fix: ganti ke button login yang benar
+    By btnMasuk     = By.xpath("//button[normalize-space()='Masuk']");
+
     By popupBerhasil = By.xpath("//*[contains(text(),'Selamat datang')]");
-    By btnMengerti = By.xpath("//button[contains(.,'Mengerti')]");
+
+    // Cukup satu selector untuk Mengerti
+    By btnMengerti  = By.xpath("//button[normalize-space()='Mengerti']");
 
     public loginPage(WebDriver driver) {
         this.driver = driver;
+        this.wait   = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     public void openLoginPage() {
@@ -27,15 +34,20 @@ public class loginPage {
     }
 
     public void inputEmail(String email) {
-        driver.findElement(txtEmail).sendKeys(email);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(txtEmail))
+                .sendKeys(email);
     }
 
     public void inputPassword(String password) {
-        driver.findElement(txtPassword).sendKeys(password);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(txtPassword))
+                .sendKeys(password);
     }
 
     public void clickMasukButton() {
-        driver.findElement(btnMasuk).click();
+        WebElement btn = wait.until(
+                ExpectedConditions.elementToBeClickable(btnMasuk)
+        );
+        btn.click();
     }
 
     public void verifyDashboardPage() {
@@ -43,37 +55,25 @@ public class loginPage {
     }
 
     public boolean isSuccessPopupDisplayed() {
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        wait.until(
-                ExpectedConditions.visibilityOfElementLocated(popupBerhasil)
-        );
-
+        wait.until(ExpectedConditions.visibilityOfElementLocated(popupBerhasil));
         return driver.findElement(popupBerhasil).isDisplayed();
     }
 
     public void clickMengertiButton() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        // ✅ Tunggu popup/overlay lain hilang dulu jika ada
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(
-                By.xpath("//*[contains(@class,'overlay') or contains(@class,'backdrop')]")
-        ));
-
         WebElement btn = wait.until(
-                ExpectedConditions.elementToBeClickable(btnMengerti)
+                ExpectedConditions.presenceOfElementLocated(btnMengerti)
         );
 
-        // ✅ Gunakan JavaScript click sebagai fallback jika biasa gagal
+        wait.until(ExpectedConditions.elementToBeClickable(btnMengerti));
+
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView({block:'center'});", btn);
+
         try {
             btn.click();
         } catch (Exception e) {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].click();", btn);
+            ((JavascriptExecutor) driver)
+                    .executeScript("arguments[0].click();", btn);
         }
     }
-
-
-
 }

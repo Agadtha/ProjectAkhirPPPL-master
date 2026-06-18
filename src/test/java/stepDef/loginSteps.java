@@ -29,8 +29,8 @@ public class loginSteps {
 
     @When("the user enters a valid email and password")
     public void theUserEntersAValidEmailAndPassword() {
-        login.inputEmail("atmajagading666@gmail.com");
-        login.inputPassword("Nasigorengkuah060606");
+        login.inputEmail("sajajaka974@gmail.com");
+        login.inputPassword("password123");
     }
 
     @And("clicks the login button")
@@ -48,7 +48,7 @@ public class loginSteps {
         Assert.assertTrue(login.isSuccessPopupDisplayed());
     }
 
-    @And("user clicks Mengerti button")
+    @And("user clicks mengerti button")
     public void userClicksMengertiButton() {
         login.clickMengertiButton();
     }
